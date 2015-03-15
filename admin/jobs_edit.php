@@ -12,6 +12,8 @@ if (! $result) {
 }
 $categories = $db->RecordsArray(MYSQL_ASSOC);
 
+
+//Get the selected Job Record
 if(isset($_GET['id'])){
 	$id=$_GET['id'];
 	$job_row=$db->SelectRows("tj_jobs", array("id"=>$id));
@@ -22,7 +24,7 @@ if(isset($_GET['id'])){
 		$job=$db->RowArray();	
 	}
 }
-var_dump($jobs);
+//var_dump($jobs);
 
 if($_POST)
 {
