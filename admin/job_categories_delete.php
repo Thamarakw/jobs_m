@@ -1,5 +1,6 @@
 <?php require_once("includes/config.php"); ?>
 <?php
+//Retrieve clicked data row
 if(isset($_GET['id'])){		
 	$id=$_GET['id'];
 	$filters['id']=$id;                                                        
@@ -9,10 +10,11 @@ if(isset($_GET['id'])){
 	}
 	$category=$db->RowArray();
 }
+//Delete data
 elseif(isset($_POST['id'])){
 	$filter["id"] = $_POST['id'];													
-	$result = $db->DeleteRows("tj_categories", $filter);
-	if (! $result) {
+	$category_delete = $db->DeleteRows("tj_categories", $filter);
+	if (! $category_delete) {
 		$db->Kill();
 	}
 	else{
@@ -21,11 +23,11 @@ elseif(isset($_POST['id'])){
 	}
 }
 
-$result2=$db->SelectRows("tj_categories");
-if(!$result2){
+$categories=$db->SelectRows("tj_categories");
+if(!$categories){
 	$db->Kill();
 }
-$categories=$db->RecordsArray(MYSQL_ASSOC);
+$categories_array=$db->RecordsArray(MYSQL_ASSOC);
 ?>
 
 <!DOCTYPE html>   
@@ -66,7 +68,7 @@ $categories=$db->RecordsArray(MYSQL_ASSOC);
 										<p>
 											<select name="job_category">
 												<option value="0" <?php echo ($category['parent']==0)?'selected="selected"':'';?>>-Root-</option>
-                                                <?php foreach ($categories as $cat){?>
+                                                <?php foreach ($categories_array as $cat){?>
 												<option value="<?php echo $cat['id']?>" <?php echo ($category['parent']==$cat['id'])?'selected="selected"':'';?>><?php echo $cat['name']?></option>
                                                 <?php }?>
 											</select> 

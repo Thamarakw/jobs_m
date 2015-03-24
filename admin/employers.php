@@ -1,11 +1,11 @@
 <?php require_once("includes/config.php"); ?>
 <?php
-$result = $db->SelectRows("tj_employers");		// Execute the select. 
+$employers = $db->SelectRows("tj_employers");		// Execute the select. 
 //var_dump($result);	
-if (! $result) {    // If we have an error
+if (! $employers) {    // If we have an error
     $db->Kill();   // Show the error and kill the script
 }
-$employers = $db->RecordsArray(MYSQL_ASSOC);	
+$employers_array = $db->RecordsArray(MYSQL_ASSOC);	
 //var_dump($employers);
 $employers_count = $db->RowCount();
 //var_dump($employers_count);
@@ -41,12 +41,12 @@ $employers_count = $db->RowCount();
                                 <th width="35">&nbsp;</th>
                                 <th width="35">&nbsp;</th>
                             </tr>
-                            <?php foreach($employers as $employer){?>
+                            <?php foreach($employers_array as $employer){?>
                             <tr>
                                 <td class="center-text"><?php echo $employer['id'];?></td>
                                 <td class=""><?php echo $employer['company'];?></td>
                                 <td class=""><?php echo $employer['name'];?></td>
-                                <td class=""><a href="mailto:<?php echo $employer['email'];?>"><?php echo $employer['email'];?></a></td>
+<!-- <a href="mailto: ..... -->	<td class=""><a href="mailto:<?php echo $employer['email'];?>"><?php echo $employer['email'];?></a></td>
                                 <td class="center-text"><a href="employers_edit.php?id=<?php echo $employer['id'];?>"><i class="fa fa-pencil"></i></a></td>
                                 <td class="center-text"><a href="employers_delete.php?id=<?php echo $employer['id']?>"><i class="fa fa-remove"></i></a></td>
                             </tr>

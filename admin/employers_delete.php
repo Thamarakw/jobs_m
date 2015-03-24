@@ -12,8 +12,8 @@ if(isset($_GET['id'])){
 
 elseif(isset($_POST['id'])){
 	$filter["id"] = $_POST['id'];													
-	$result = $db->DeleteRows("tj_employers", $filter);
-	if (! $result) {
+	$employer_delete = $db->DeleteRows("tj_employers", $filter);
+	if (! $employer_delete) {
 		$db->Kill();
 	}
 	else{

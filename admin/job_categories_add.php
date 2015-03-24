@@ -1,26 +1,27 @@
 <?php require_once("includes/config.php"); ?>
 <?php 
 $message='';
+//Insert records
 if($_POST){
 	$values['name']			= MySQL::SQLValue($_POST['category_name']);
 	$values['parent']		= MySQL::SQLValue($_POST['parent']);
 	$values['description']	= MySQL::SQLValue($_POST['description']);
 	$values['status']		= MySQL::SQLValue($_POST['status']);
 	
-	$result = $db->InsertRow("tj_categories", $values);
-	if($result){
+	$category_insert = $db->InsertRow("tj_categories", $values);
+	if($category_insert){
 		$message= "Record Saved.";
 	}
 	else{
 		$message="<p>Record Insertion Error.</p>";
 	}		
 }
-
-	$result2 = $db->SelectRows("tj_categories");
-	if (! $result2) {
+	//Available categories are retrieved to the selection
+	$categories = $db->SelectRows("tj_categories");
+	if (! $categories) {
 		$db->Kill();
 	}
-	$categories = $db->RecordsArray(MYSQL_ASSOC);
+	$categories_array = $db->RecordsArray(MYSQL_ASSOC);
 	//var_dump($categories);
 ?>
 <!DOCTYPE html>   
@@ -59,7 +60,7 @@ if($_POST){
                                         <p>
                                         <select name="parent">
                                             <option value="0">-Root-</option>
-                                            <?php foreach ($categories as $category){?>
+                                            <?php foreach ($categories_array as $category){?>
                                             <option value="<?php echo $category['id']?>"><?php echo $category['name']?></option>  
                                             <?php }?>
                                         </select>

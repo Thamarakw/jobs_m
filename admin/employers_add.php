@@ -8,20 +8,18 @@ if($_POST)
 	$values['city'] 			= MySQL::SQLValue($_POST["employer_city"]);
 	$values['name'] 			= MySQL::SQLValue($_POST["employer_contact_person"]);
 	$values['telephone'] 		= MySQL::SQLValue($_POST["employer_phone"]);
-	$values['email'] 			= MySQL::SQLValue($_POST["employer_email"]);
-	//$values['record_created'] = MySQL::SQLValue();								
-	//$values['record_modified']= MySQL::SQLValue();
-	$values['status'] 			= MySQL::SQLValue(1);
-	$result = $db->InsertRow("tj_employers", $values);
-	//var_dump($result); 
-	if($result){
+	$values['email'] 			= MySQL::SQLValue($_POST["employer_email"]);  //$values['record_created'] = MySQL::SQLValue();	//$values['record_modified']= MySQL::SQLValue();
+	$values['status'] 			= MySQL::SQLValue(1);									
+	
+	$employer_insert = $db->InsertRow("tj_employers", $values);
+	if($employer_insert){
 		$message = "<p>Record Saved</p>";					
-		//Start File upload
-		include("includes/class.upload.php");
+		
+		include("includes/class.upload.php");  //Start File upload
 		$dir_dest = "/wamp/www/jobs_m/imagesemployers_logos";
 		$handle = new Upload($_FILES['employer_logo_image']);																							
 		if ($handle->uploaded) {
-			$handle->file_new_name_body = "emp_logo_".$result;							//?????????????
+			$handle->file_new_name_body = "emp_logo_".$employer_insert;							//?????????????
 			$handle->Process($dir_dest);
 			if ($handle->processed) {
 	            $upload_message = "<p>Logo file upoladed.</p>";

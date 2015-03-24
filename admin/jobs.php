@@ -1,35 +1,54 @@
 <?php require_once("includes/config.php"); ?>
 <?php 
-	$result=$db->SelectRows("tj_jobs");	
-	if(!$result){
+	$jobs=$db->SelectRows("tj_jobs");	
+	if(!$jobs){
 		$db->kill();
-		$vacancies = false;	
-		$vacancies_count=0;
+		//If not connecected to the db...
+		$jobs_array = false;	
+		$jobs_array_count=0;
 	}
 	elseif($db->RowCount()>0){	
-		$vacancies = $db->RecordsArray(MYSQL_ASSOC);	
-		$vacancies_count=$db->RowCount();
+		$jobs_array = $db->RecordsArray(MYSQL_ASSOC);	
+		$jobs_array_count=$db->RowCount();
 	}
 	else{
-		$vacancies = false;	
-		$vacancies_count=0;	
+		//If no records available in the db...
+		$jobs_array = false;	
+		$jobs_array_count=0;	
 	}
 	
-	
-	$employers=$db->SelectRows("tj_employers", null, array("id", "company"));
-	
+	//retrieve employer id & employer name
+	$employers=$db->SelectRows("tj_employers", null, array(	"id", "company"));	
 	if(!$employers){
 		$db->kill();
 	}
 	elseif($db->RowCount()>0){
 		$employers_ass_array=$db->RecordsArray(MYSQL_ASSOC);
+		//var_dump($employers_ass_array);
+		//associative array converts to a numeric array			
 		$employers_array = array();
-		$employers_array[0] = "NONE";
+		$employers_array[0] = "NONE";											//???????????
 		foreach($employers_ass_array as $emp){
-			$employers_array[$emp['id']] = $emp['company'];
+			$employers_array[$emp['id']] = $emp['company'];						//???????????
 		}
 	}
 	//var_dump($employers_array);
+	
+	//retrieve category 'id' & 'name'
+	$categories=$db->SelectRows("tj_categories", null, array("id", "name"));
+	if(!$categories){
+		$db->Kill();
+	}
+	elseif($db->RowCount()>0){
+		$categories_ass_array=$db->RecordsArray(MYSQL_ASSOC);
+		//var_dump($categories_ass_array);
+		$categories_array=array();
+		$categories_array[0] = "NONE";
+		foreach($categories_ass_array as $cat){
+			$categories_array[$cat['id']] = $cat['name'];
+		}
+	}
+	//var_dump($categories_array);
 ?>
 <!DOCTYPE html>   
 <!--[if lt IE 7 ]> <html lang="en" class="no-js ie6"> <![endif]-->
@@ -64,22 +83,21 @@
                              	<th width="35">&nbsp;</th>
                              	<th width="35">&nbsp;</th>
                             </tr>
-                            <?php foreach ($vacancies as $vacancy){?>
+                            <?php foreach ($jobs_array as $job){?>
 							<tr class="inactive">
-                            	<td class="center-text"><?php echo $vacancy['id'];?></td>
-                                <td class=""><?php echo $employers_array[$vacancy['company']];?>
-                                <?php //echo $vacancy['company'];?>
-                                </td>
-                            	<td><?php echo $vacancy['category'];?></td>
-                            	<td class=""><?php echo $vacancy['title'];?></td>
-                                <td class="center-text"><?php echo $vacancy['status'];?></td>
+                            	<td class="center-text"><?php echo $job['id'];?></td>
+                                <td class=""><?php echo $employers_array[$job['company']];?></td>
+                                <td class=""><?php echo $categories_array[$job['category']];?></td>
+      	                      	<!--<td><?php echo $job['category'];?></td>-->
+                            	<td class=""><?php echo $job['title'];?></td>
+                                <td class="center-text"><?php echo $job['status'];?></td>
                             	<td class="center-text"><i class="fa fa-ban" title="Inactive"></i></td>
-                                <td class="center-text"><a href="jobs_edit.php?id=<?php echo $vacancy['id'];?>"><i class="fa fa-pencil"></i></a></td>
-                                <td class="center-text"><a href="jobs_delete.php?id=<?php echo $vacancy['id'];?>"><i class="fa fa-remove"></i></a></td>
+                                <td class="center-text"><a href="jobs_edit.php?id=<?php echo $job['id'];?>"><i class="fa fa-pencil"></i></a></td>
+                                <td class="center-text"><a href="jobs_delete.php?id=<?php echo $job['id'];?>"><i class="fa fa-remove"></i></a></td>
                             </tr>
                             <?php }?>
 						</table>
-						<?php if($vacancies_count==0){?>
+						<?php if($jobs_array_count==0){?>
                             <div class="alert center-text">
                                 No data to display.
                             </div>

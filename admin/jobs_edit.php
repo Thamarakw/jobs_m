@@ -1,54 +1,59 @@
 <?php require_once("includes/config.php"); ?>
 <?php 
-$result = $db->SelectRows("tj_employers");
-if (! $result) {
-    $db->Kill();
-}
-$employers = $db->RecordsArray(MYSQL_ASSOC);
-
-$result2 = $db->SelectRows("tj_categories");
-if (! $result) {
-    $db->Kill();
-}
-$categories = $db->RecordsArray(MYSQL_ASSOC);
-
-
-//Get the selected Job Record
 if(isset($_GET['id'])){
 	$id=$_GET['id'];
-	$job_row=$db->SelectRows("tj_jobs", array("id"=>$id));
-	if (! $job_row) {
-    $db->Kill();
-}	
-	else{
-		$job=$db->RowArray();	
+	$filters['id']=$id;            							                                            
+	$result=$db->SelectRows("tj_jobs",$filters);							
+	if (! $result) {
+    	$db->Kill();
 	}
+	$job=$db->RowArray();		   
 }
-//var_dump($jobs);
 
-if($_POST)
-{
-	$values['company'] 			= MySQL::SQLValue($_POST["employer"]);
-	$values['category'] 		= MySQL::SQLValue($_POST["job_category"]);
-	$values['title'] 			= MySQL::SQLValue($_POST["job_title"]);
-	$values['description'] 		= MySQL::SQLValue($_POST["job_description"]);
-	//$values['publish_date'] 	= MySQL::SQLValue($_POST[""]);
-	$values['exp_date'] 		= MySQL::SQLValue($_POST["job_expire_date"]);
-	$values['status'] 			= MySQL::SQLValue(1);
-	$values['salary'] 			= MySQL::SQLValue($_POST["job_salary"]);
-	$values['negot_salary'] 	= MySQL::SQLValue($_POST["job_salary_negotiable"]);
-	
-	if (! $db->UpdateRows("tj_jobs", $values, array("id" => $_POST["id"]))) $db->Kill;
-	//var_dump($result);
-	//echo $db->GetLastSQL();
-	
-	if($result){
-		$message = "<p class='message'>Record Saved</p>";
+//Edit data
+elseif(isset($_POST['id'])){
+	$updates['company'] 		= MySQL::SQLValue($_POST["employer"]);
+	$updates['category'] 		= MySQL::SQLValue($_POST["job_category"]);
+	$updates['title'] 			= MySQL::SQLValue($_POST["job_title"]);
+	$updates['description'] 	= MySQL::SQLValue($_POST["job_description"]);
+	//$updates['publish_date'] 	= MySQL::SQLValue($_POST[""]);
+	$updates['exp_date'] 		= MySQL::SQLValue($_POST["job_expire_date"]);
+	$updates['status'] 			= MySQL::SQLValue(1);
+	$updates['salary'] 			= MySQL::SQLValue($_POST["job_salary"]);
+	$updates['negot_salary'] 	= MySQL::SQLValue($_POST["job_salary_negotiable"]);
+
+	if (! $db->UpdateRows("tj_jobs", $updates, array("id" => $_POST['id']))) {		
+		$db->Kill();		
 	}
 	else{
-		$message = "<p class='message error'>Record Update Error</p>";
+		$message="Record Changed";	
 	}
+	
+	//Place changed data on form input itself
+	$id=$_POST['id'];
+	$filters['id']=$id;                                                         
+	$result=$db->SelectRows("tj_jobs",$filters);							
+	if (! $result) {
+    	$db->Kill();
+	}
+	$job=$db->RowArray();    
 }
+
+var_dump($job);
+//Retrieve data from employers table
+$employers = $db->SelectRows("tj_employers");
+if (! $employers) {
+    $db->Kill();
+}
+$employers_array = $db->RecordsArray(MYSQL_ASSOC);
+
+//Retrieve data from category table
+$categories = $db->SelectRows("tj_categories");
+if (! $categories) {
+    $db->Kill();
+}
+$categories_array = $db->RecordsArray(MYSQL_ASSOC);
+
 ?>
 
 <!DOCTYPE html>   
@@ -78,10 +83,10 @@ if($_POST)
                             <div class="row">
                                 <p class="label">Employer:</p>
                                 <p>
-                                    <select name="employer" class="dropdown">
-                                        <option value="0">-Select Employer-</option>
-                                        <?php foreach ($employers as $employer){?>
-                                        <option value="<?php echo $employer['id']?>"><?php echo $employer['company']?></option>
+									<select name="employer">
+                                        <option value="0" <?php echo ($job['company']==0)?'selected="selected"':'';?>>---</option>
+                                        <?php foreach ($employers_array as $emp){?>		
+                                        <option value="<?php echo $emp['id']?>" <?php echo ($emp['id']==$job['company'])?'selected="selected"':'';?>><?php echo $emp['company']?></option>      
                                         <?php }?>
                                     </select>
                                 </p>
@@ -89,10 +94,10 @@ if($_POST)
                             <div class="row">
                                 <p class="label">Job Category:</p>
                                 <p>
-                                    <select name="job_category" class="dropdown">
-                                        <option value="0">-Select Job Category-</option>
-                                        <?php foreach ($categories as $category){?>
-                                        <option value="<?php echo $category['id']?>"><?php echo $category['name']?></option>
+                                    <select name="job_category">
+                                        <option value="0" <?php echo ($job['category']==0)?'selected="selected"':'';?>>-Root-</option>
+                                        <?php foreach ($categories_array as $cat){?>		
+                                        <option value="<?php echo $cat['id']?>" <?php echo ($cat['id']==$job['category'])?'selected="selected"':'';?>><?php echo $cat['name']?></option>      
                                         <?php }?>
                                     </select>
                                 </p>
@@ -107,21 +112,21 @@ if($_POST)
                             </div>
                             <div class="row">
                                 <p class="label">Job Advertising Image:</p>
-                                <p><input type="file" name="job_image"></p>
+                                <p><input type="file" name="job_image" ></p>
                             </div>
                             <div class="row">
                                 <p class="label">Salary:</p>
-                                <p><input type="text" name="job_salary" class="textbox"></p>
+                                <p><input type="text" name="job_salary" class="textbox" value="<?php echo $job['salary']; ?>"></p>
                             </div>
                             <div class="row">
                                 <p class="label">Salary Negotiable: </p>
                                 <!--<p><input type="checkbox" value="1" name="job_salary_negotiable"></p>-->
-                                <p><input type="text" name="job_salary_negotiable"></p>							
+                                <p><input type="text" name="job_salary_negotiable" value="<?php echo $job['negot_salary']; ?>"></p>							
                             </div>
                             <hr>
                             <div class="row">
                                 <p class="label">Expire Date:<span>(Default is 2 weeks from today)</span></p>
-                                <p><input type="text" name="job_expire_date" class="textbox" value=""></p>
+                                <p><input type="text" name="job_expire_date" class="textbox" value="<?php echo $job['exp_date']; ?>"></p>
                             </div>
                             <div class="row">
                                 <p><input type="submit" value="Submit" name="job_submit"></p>

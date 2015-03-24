@@ -1,10 +1,10 @@
 <?php require_once("includes/config.php"); ?>
 <?php
-$result = $db->SelectRows("tj_categories");
-if (! $result) {
+$categories = $db->SelectRows("tj_categories");
+if (! $categories) {
     $db->Kill();
 }
-$categories = $db->RecordsArray(MYSQL_ASSOC);
+$categories_array = $db->RecordsArray(MYSQL_ASSOC);
 $categories_count = $db->RowCount();
 ?>
 <!DOCTYPE html>   
@@ -38,7 +38,7 @@ $categories_count = $db->RowCount();
                                 <th width="35">&nbsp;</th>
                                 <th width="35">&nbsp;</th>
                             </tr>
-                            <?php foreach($categories as $category){?>
+                            <?php foreach($categories_array as $category){?>
                             <tr>
                                 <td class="center-text"><?php echo $category['id'];?></td>
                                 <td><?php echo $category['name'];?></td>

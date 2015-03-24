@@ -24,11 +24,11 @@ if($_POST)
 	$values['salary'] 			= MySQL::SQLValue($_POST["job_salary"]);
 	$values['negot_salary'] 	= MySQL::SQLValue($_POST["job_salary_negotiable"]);
 	
-	$result = $db->InsertRow("tj_vacancies", $values);
+	$jobs_insert = $db->InsertRow("tj_vacancies", $values);
 	//var_dump($result);
 	//echo $db->GetLastSQL();
 	
-	if($result){
+	if($jobs_insert){
 		$message = "<p class='message'>Record Saved</p>";
 	}
 	else{

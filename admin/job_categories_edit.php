@@ -1,5 +1,6 @@
 <?php require_once("includes/config.php"); ?>
 <?php
+//Retrieve clicked data row
 if(isset($_GET['id'])){
 	$id=$_GET['id'];
 	$filters['id']=$id;            							                                            
@@ -10,6 +11,7 @@ if(isset($_GET['id'])){
 	$category=$db->RowArray();		   
 }
 
+//Edit data
 elseif(isset($_POST['id'])){
 	$updates['name'] 		= MySQL::SQLValue($_POST["category_name"]);
 	$updates['description'] = MySQL::SQLValue($_POST["description"]);
@@ -20,8 +22,10 @@ elseif(isset($_POST['id'])){
 		$db->Kill();		
 	}
 	else{
-		$message="Saved";	
+		$message="Record Changed";	
 	}
+	
+	//Place changed data on form input itself
 	$id=$_POST['id'];
 	$filters['id']=$id;                                                         
 	$result=$db->SelectRows("tj_categories",$filters);							
@@ -31,11 +35,12 @@ elseif(isset($_POST['id'])){
 	$category=$db->RowArray();    
 }
 
-$result2 = $db->SelectRows("tj_categories");
-if (! $result2) {
+//Retrieve data from category table
+$categories = $db->SelectRows("tj_categories");
+if (! $categories) {
     $db->Kill();
 }
-$categories = $db->RecordsArray(MYSQL_ASSOC);
+$categories_array = $db->RecordsArray(MYSQL_ASSOC);
 
 ?>
 <!DOCTYPE html>   
@@ -74,7 +79,7 @@ $categories = $db->RecordsArray(MYSQL_ASSOC);
                                         <p>
                                         <select name="job_category">
                                             <option value="0" <?php echo ($category['parent']==0)?'selected="selected"':'';?>>-Root-</option>
-                                            <?php foreach ($categories as $cat){?>		
+                                            <?php foreach ($categories_array as $cat){?>		
                                             <option value="<?php echo $cat['id']?>" <?php echo ($category['parent']==$cat['id'])?'selected="selected"':'';?>><?php echo $cat['name']?></option>      <!-- ??????????? -->
                                             <?php }?>
                                         </select>

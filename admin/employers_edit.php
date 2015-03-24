@@ -9,7 +9,6 @@ if(isset($_GET['id'])){
     	$db->Kill();
 	}
 	$employer=$db->RowArray();	
-	var_dump($employer);
 }
 elseif(isset($_POST['id'])){
 	$updates['company'] 		= MySQL::SQLValue($_POST["employer_name"]);
@@ -21,7 +20,7 @@ elseif(isset($_POST['id'])){
 	$updates['email'] 			= MySQL::SQLValue($_POST["employer_email"]);
 	$updates['status'] 			= MySQL::SQLValue(1);
 	//if (! $db->UpdateRows("test", $values, array("id" => 1))) $db->Kill
-	if (! $db->UpdateRows("tj_employers", $updates, array("id" => $_POST['id']))) $db->Kill;		//????????????
+	if (! $db->UpdateRows("tj_employers", $updates, array("id" => $_POST['id']))) $db->Kill;		
 	
 	$id=$_POST['id'];
 	$filters['id']=$id;                                                         
@@ -29,7 +28,24 @@ elseif(isset($_POST['id'])){
 	if (! $result) {
     	$db->Kill();
 	}
-	$employer=$db->RowArray();    
+	$employer=$db->RowArray();   
+	
+	include("includes/class.upload.php");  //Start File upload
+		$dir_dest = "/wamp/www/jobs_m/images/employers_logos";
+		$handle = new Upload($_FILES['edit_employer_logo_image']);																							
+		if ($handle->uploaded) {
+			$handle->file_new_name_body = "emp_logo_".$_POST['id'];			
+			$handle->file_overwrite = true;				
+			$handle->Process($dir_dest);
+			if ($handle->processed) {
+	            $upload_message = "<p>Logo file upoladed.</p>";
+	            $uploaded_data = $handle; //Experiment purpose. Remove later.			
+	        } 
+			else {
+	            $upload_message = "<p>Logo file upolad error.</p>";
+	            $uploaded_data = $handle; //Experiment purpose. Remove later.
+	        }
+		} 
 }
 ?>
 <!DOCTYPE html>   
@@ -83,11 +99,9 @@ elseif(isset($_POST['id'])){
                                 <div class="row">
                                     <div class="">
                                         <p class="label">Logo:</p>
-                                        <p><input type="file" name="employer_logo_image" ></p>
+                                        <p><input type="file" name="edit_employer_logo_image" ></p>
+                                        <p><img src="../images/employers_logos/<?php echo "emp_logo_".$employer['id']?>.jpg?r=<?php echo rand();?>"></p>
                                         <div>
-											<?php 
-                                                
-                                            ?>
                                     	</div>
                                     </div>
                                 </div>
