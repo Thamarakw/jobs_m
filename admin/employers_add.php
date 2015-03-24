@@ -15,7 +15,7 @@ if($_POST)
 	if($employer_insert){
 		$message = "<p>Record Saved</p>";					
 		
-		include("includes/class.upload.php");  //Start File upload
+		include("includes/class.upload.php");  //Start File upload   to test
 		$dir_dest = "/wamp/www/jobs_m/imagesemployers_logos";
 		$handle = new Upload($_FILES['employer_logo_image']);																							
 		if ($handle->uploaded) {
